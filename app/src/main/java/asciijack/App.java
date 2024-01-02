@@ -22,10 +22,10 @@ public class App {
 	}
 
 	private void setup() {
-		playerHand.add(Deck.getRandomCard());
-		dealerHand.add(Deck.getRandomCard());
-		playerHand.add(Deck.getRandomCard());
-		dealerHand.add(Deck.getRandomCard());
+		playerHand.add(Deck.getRandomCard(true));
+		dealerHand.add(Deck.getRandomCard(true));
+		playerHand.add(Deck.getRandomCard(true));
+		dealerHand.add(Deck.getRandomCard(false));
 
 		System.out.println("Dealer: " + calcHand(dealerHand));
 		System.out.println("Player: " + calcHand(playerHand));
@@ -36,9 +36,9 @@ public class App {
 	}
 
 	public void printHand(List<Card> hand) {
-		for (int i = 0; i < hand.get(0).getCardLines().length; i++) {
+		for (int i = 0; i < hand.get(0).toStringLines().length; i++) {
 			for (int j = 0; j < hand.size(); j++) {
-				System.out.print(hand.get(j).getCardLines()[i]);
+				System.out.print(hand.get(j).toStringLines()[i]);
 
 				if (j < hand.size() - 1) {
 					System.out.print("\t");

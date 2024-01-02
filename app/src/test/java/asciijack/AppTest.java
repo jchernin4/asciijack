@@ -15,22 +15,22 @@ class AppTest {
 		App app = new App();
 
 		List<Card> testHand = new ArrayList<>();
-		testHand.add(new Card(14, 0));
-		testHand.add(new Card(10, 0));
+		testHand.add(new Card(14, 0, true));
+		testHand.add(new Card(10, 0, true));
 
 		int calc = app.calcHand(testHand);
 		assertEquals(calc, 21, "Calc was actually " + calc);
 
-		testHand.add(new Card(4, 0));
+		testHand.add(new Card(4, 0, true));
 
 		calc = app.calcHand(testHand);
 		assertEquals(calc, 15, "Calc was actually " + calc);
 
-		testHand.add(new Card(11, 0));
+		testHand.add(new Card(11, 0, true));
 		calc = app.calcHand(testHand);
 		assertEquals(calc, 25, "Calc was actually " + calc);
 
-		testHand.add(new Card(13, 0));
+		testHand.add(new Card(13, 0, true));
 		calc = app.calcHand(testHand);
 		assertEquals(calc, 35, "Calc was actually " + calc);
 	}

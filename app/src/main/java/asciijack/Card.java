@@ -4,10 +4,12 @@ public class Card {
 	private static char[] suitSymbols = { '♠', '♦', '♥', '♣' };
 
 	private int card, suit;
+	private boolean revealed;
 
-	public Card(int card, int suit) {
+	public Card(int card, int suit, boolean revealed) {
 		this.card = card;
 		this.suit = suit;
+		this.revealed = revealed;
 	}
 
 	public int getCard() {
@@ -19,21 +21,38 @@ public class Card {
 	}
 
 	public String toString() {
+		return revealed ? getCardString() : getBlankCardString();
+	}
+
+	private String getCardString() {
 		char symbol = suitToSymbol(suit);
 		char cardChar = cardToChar(card);
 
-		return String.format("┌─────────┐%n" + 
-			"│%c        │%n" + 
-			"│         │%n" + 
-			"│         │%n" + 
-			"│    %c    │%n" + 
-			"│         │%n" + 
-			"│         │%n" + 
-			"│        %c│%n" + 
-			"└─────────┘", cardChar, symbol, cardChar);
+		return String.format("┌─────────┐%n" +
+				"│%c        │%n" +
+				"│         │%n" +
+				"│         │%n" +
+				"│    %c    │%n" +
+				"│         │%n" +
+				"│         │%n" +
+				"│        %c│%n" +
+				"└─────────┘", cardChar, symbol, cardChar);
+
 	}
 
-	public String[] getCardLines() {
+	private String getBlankCardString() {
+		return String.format("┌─────────┐%n" +
+				"│░░░░░░░░░│%n" +
+				"│░░░░░░░░░│%n" +
+				"│░░░░░░░░░│%n" +
+				"│░░░░░░░░░│%n" +
+				"│░░░░░░░░░│%n" +
+				"│░░░░░░░░░│%n" +
+				"│░░░░░░░░░│%n" +
+				"└─────────┘");
+	}
+
+	public String[] toStringLines() {
 		return toString().split("\n");
 	}
 

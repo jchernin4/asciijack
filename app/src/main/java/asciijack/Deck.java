@@ -6,12 +6,12 @@ import java.util.Random;
 public class Deck {
 	private static ArrayList<Card> generatedCards = new ArrayList<Card>();
 
-	public static Card getRandomCard() {
+	public static Card getRandomCard(boolean revealed) {
 		Random r = new Random();
 
 		Card c = null;
 		do {
-			c = new Card(r.nextInt(2, 15), r.nextInt(0, 4));
+			c = new Card(r.nextInt(2, 15), r.nextInt(0, 4), revealed);
 
 		} while (generatedCards.contains(c));
 
