@@ -90,7 +90,7 @@ public class App {
 			printAllHands(currentHand, false);
 
 			if (!statusLine.equals("")) System.out.println(statusLine);
-			System.out.print("\n\nEnter your choice ([s]tand, [h]it, s[p]lit, [q]uit): ");
+			System.out.printf("%n%nEnter your choice ([s]tand, [h]it, s[p]lit, [q]uit): ");
 			String resp = sc.nextLine();
 
 			switch (resp.toLowerCase()) {
@@ -114,7 +114,7 @@ public class App {
 						clearConsole();
 						printAllHands(currentHand, false);
 						System.out.println("Hitting...");
-						System.out.println("\n\nBusted! Dealer wins.");
+						System.out.printf("%n%nBusted! Dealer wins.");
 						playerHands.remove(0);
 						done = true;
 
@@ -228,7 +228,7 @@ public class App {
 				System.out.print(hand.getCards().get(j).toStringLines()[i]);
 
 				if (j < hand.getCards().size() - 1) {
-					System.out.print("\t");
+					System.out.printf("    ");
 				} else {
 					System.out.println();
 				}
