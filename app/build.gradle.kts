@@ -37,6 +37,18 @@ application {
     mainClass.set("asciijack.App")
 }
 
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "asciijack.App" // Specify the main class
+    }
+
+    // Optional: You can include/exclude specific files or resources
+    // For example:
+    // from(sourceSets.main.output) {
+    //     exclude 'META-INF/*.RSA', 'META-INF/*.SF', 'META-INF/*.DSA'
+    // }
+}
+
 tasks.named<Test>("test") {
     // Use JUnit Platform for unit tests.
     useJUnitPlatform()
