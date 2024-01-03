@@ -1,142 +1,180 @@
 package asciijack;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
-import java.util.List;
 import java.util.Scanner;
 
 public class App {
-	private List<Card> dealerHand;
-	private List<Card> playerHand;
+	private static Hand dealerHand;
+	private static ArrayList<Hand> playerHands;
 
-	public App() {
-		dealerHand = new ArrayList<>();
-		playerHand = new ArrayList<>();
-	}
+	private static Scanner sc;
 
 	public static void main(String[] args) {
-		new App().run();
-	}
+		dealerHand = new Hand();
+		playerHands = new ArrayList<>();
 
-	private void run() {
-		setup();
-	}
+		sc = new Scanner(System.in);
 
-	private void setup() {
-		Scanner sc = new Scanner(System.in);
-		clearConsole();
+		boolean running = true;
+		while (running) {
+			if (playerHands.size() == 0) {
+				shuffleDeck();
+				continue;
+			}
 
-		playerHand.add(Deck.getRandomCard(true));
-		dealerHand.add(Deck.getRandomCard(false));
-		playerHand.add(Deck.getRandomCard(true));
-		dealerHand.add(Deck.getRandomCard(true));
+			boolean foundIncomplete = false;
+			for (Hand hand : playerHands) {
+				if (!hand.isCompleted()) {
+					foundIncomplete = true;
+					break;
+				}
+			}
 
-		int playerHandCalc = calcHand(playerHand, false);
+			if (!foundIncomplete) {
+				finishDealingDealer();
 
-		printHands(false);
+				for (Hand hand : new ArrayList<>(playerHands)) {
+					int playerScore = calcHand(hand, false);
+					int dealerScore = calcHand(dealerHand, false);
 
-		if (playerHandCalc == 21) {
-			System.out.println("Blackjack! You won!");
-			sc.close();
-			return;
-		}
+					dealerHand.getCards().get(0).setRevealed(true);
 
-gameloop:
-		while (true) {
-			System.out.print("\n\nEnter your choice ([s]tand, [h]it, s[p]lit): ");
-			String resp = sc.nextLine();
+					clearConsole();
+					printAllHands(hand, true);
 
-			clearConsole();
+					if (playerScore > 21) {
+						// TODO: This should probably be called immediately, not after all hands are
+						// played
+						System.out.println("Busted! You lost.");
+						System.out.println("THIS SHOULD NOT HAPPEN!! UH OH!!!!");
 
-			switch (resp.toLowerCase()) {
-				case "s":
-					finishDealingDealer();
-					dealerHand.get(0).setRevealed(true);
-					printHands(true);
-					System.out.println("Standing...");
-
-					int dealerHandCalc = calcHand(dealerHand, false);
-					playerHandCalc = calcHand(playerHand, false);
-
-					if (dealerHandCalc > 21) {
+					} else if (dealerScore > 21) {
 						System.out.println("Dealer busted! You win!");
 
-					} else if (dealerHandCalc < playerHandCalc) {
+					} else if (playerScore > dealerScore) {
 						System.out.println("You won!");
 
-					} else if (dealerHandCalc > playerHandCalc) {
+					} else if (dealerScore > playerScore) {
 						System.out.println("You lost.");
 
 					} else {
 						System.out.println("Tie!");
 					}
 
-					break gameloop;
+					playerHands.remove(hand);
 
-				case "h":
-					playerHand.add(Deck.getRandomCard(true));
-					printHands(false);
-					System.out.println("Hitting...");
-
-					if (calcHand(playerHand, false) > 21) {
-						System.out.println("Busted! Dealer wins.");
-						break gameloop;
+					try {
+						Thread.sleep(3000);
+					} catch (Exception e) {
 					}
-					break;
+				}
 
-				case "p":
-					printHands(false);
-					System.out.println("Splitting...");
-					break;
-
-				default:
-					break;
+				shuffleDeck();
+				continue;
 			}
+
+			playHand();
 		}
 
 		sc.close();
 	}
 
-	private void finishDealingDealer() {
-		while (calcHand(dealerHand, false) <= 16) {
-			dealerHand.add(Deck.getRandomCard(true));
-		}
-	}
+	private static void playHand() {
+		boolean done = false;
+		String statusLine = "";
+		while (!done) {
+			Hand currentHand = playerHands.get(0);
+			clearConsole();
+			printAllHands(currentHand, false);
 
-	private void printHands(boolean revealDealer) {
-		int playerHandCalc = calcHand(playerHand, false);
-		int dealerHandCalc = calcHand(dealerHand, !revealDealer);
+			if (!statusLine.equals("")) System.out.println(statusLine);
+			System.out.print("\n\nEnter your choice ([s]tand, [h]it, s[p]lit, [q]uit): ");
+			String resp = sc.nextLine();
 
-		System.out.println("Dealer (" + dealerHandCalc + ")");
-		printHand(dealerHand);
+			switch (resp.toLowerCase()) {
+				case "s":
+					System.out.println("Standing...");
+					currentHand.setCompleted(true);
+					Collections.rotate(playerHands, -1);
+					done = true;
 
-		System.out.println("You (" + playerHandCalc + ")");
-		printHand(playerHand);
-	}
+					try {
+						Thread.sleep(2000);
+					} catch (Exception e) {
+					}
+					break;
 
-	private void clearConsole() {
-		System.out.print("\033[H\033[2J");
-		System.out.flush();
-	}
+				case "h":
+					statusLine = "Hitting...";
+					currentHand.addCard(Deck.getRandomCard(true));
 
-	public void printHand(List<Card> hand) {
-		for (int i = 0; i < hand.get(0).toStringLines().length; i++) {
-			for (int j = 0; j < hand.size(); j++) {
-				System.out.print(hand.get(j).toStringLines()[i]);
+					if (calcHand(currentHand, false) > 21) {
+						clearConsole();
+						printAllHands(currentHand, false);
+						System.out.println("Hitting...");
+						System.out.println("\n\nBusted! Dealer wins.");
+						playerHands.remove(0);
+						done = true;
 
-				if (j < hand.size() - 1) {
-					System.out.print("\t");
-				} else {
-					System.out.println();
-				}
+						try {
+							Thread.sleep(2000);
+						} catch (Exception e) {
+						}
+					}
+					break;
+
+				case "p":
+					statusLine = "Splitting...";
+					if (currentHand.getCards().size() > 2 || currentHand.getCards().get(0).getCard() != currentHand.getCards().get(1).getCard()) {
+						statusLine = "Can't split!";
+						continue;
+					}
+
+					playerHands.remove(currentHand);
+					playerHands.add(new Hand(new ArrayList<>(Arrays.asList(currentHand.getCards().get(0), Deck.getRandomCard(true)))));
+					playerHands.add(new Hand(new ArrayList<>(Arrays.asList(currentHand.getCards().get(1), Deck.getRandomCard(true)))));
+					done = true;
+
+					try {
+						Thread.sleep(2000);
+					} catch (Exception e) {
+					}
+
+					break;
+
+				case "q":
+					System.out.println("Quitting...");
+					sc.close();
+					System.exit(0);
+					break;
+
+				default:
+					statusLine = "Unknown comand " + resp.toLowerCase() + " entered.";
+					break;
 			}
 		}
 	}
 
-	public int calcHand(List<Card> hand, boolean ignoreHidden) {
-		List<Card> sorted = new ArrayList<>(hand);
+	private static void shuffleDeck() {
+		System.out.println("Shuffling deck...");
+		Deck.shuffle();
 
-		Collections.sort(sorted, (o1, o2) -> o1.getCard() - o2.getCard());
+		dealerHand = new Hand();
+		playerHands.clear();
+		playerHands.add(new Hand());
+
+		Hand currentHand = playerHands.get(0);
+
+		currentHand.addCard(Deck.getRandomCard(true));
+		dealerHand.addCard(Deck.getRandomCard(false));
+		currentHand.addCard(Deck.getRandomCard(true));
+		dealerHand.addCard(Deck.getRandomCard(true));
+	}
+
+	private static int calcHand(Hand hand, boolean ignoreHidden) {
+		ArrayList<Card> sorted = hand.getSortedCards();
 
 		int total = 0;
 		int aceCount = 0;
@@ -164,5 +202,42 @@ gameloop:
 		}
 
 		return total;
+	}
+
+	private static void finishDealingDealer() {
+		while (calcHand(dealerHand, false) <= 16) {
+			dealerHand.addCard(Deck.getRandomCard(true));
+		}
+	}
+
+	private static void printAllHands(Hand currentHand, boolean revealDealer) {
+		int playerHandCalc = calcHand(currentHand, false);
+		int dealerHandCalc = calcHand(dealerHand, !revealDealer);
+
+		System.out.println("Dealer (" + dealerHandCalc + ")");
+		printHand(dealerHand);
+
+		System.out.println(playerHands.size() > 1 ? "You (Hand " + playerHands.size() + ") (" + playerHandCalc + ")"
+				: "You (" + playerHandCalc + ")");
+		printHand(currentHand);
+	}
+
+	private static void printHand(Hand hand) {
+		for (int i = 0; i < hand.getCards().get(0).toStringLines().length; i++) {
+			for (int j = 0; j < hand.getCards().size(); j++) {
+				System.out.print(hand.getCards().get(j).toStringLines()[i]);
+
+				if (j < hand.getCards().size() - 1) {
+					System.out.print("\t");
+				} else {
+					System.out.println();
+				}
+			}
+		}
+	}
+
+	private static void clearConsole() {
+		System.out.print("\033[H\033[2J");
+		System.out.flush();
 	}
 }
