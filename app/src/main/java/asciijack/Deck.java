@@ -16,6 +16,7 @@ public class Deck {
 		} while (generatedCards.contains(c));
 
 		generatedCards.add(c);
+		// System.out.println("Generated " + c.getCard() + " " + c.getSuit());
 
 		return c;
 	}

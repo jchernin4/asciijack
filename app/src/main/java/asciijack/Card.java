@@ -57,11 +57,13 @@ public class Card {
 	}
 
 	public char cardToChar(int c) {
-		if (c <= 10) {
+		if (c <= 9) {
 			return Character.forDigit(c, 10);
 		}
 
 		switch (c) {
+			case 10:
+				return 'T';
 			case 11:
 				return 'J';
 			case 12:

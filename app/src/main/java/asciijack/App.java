@@ -22,16 +22,18 @@ public class App {
 	}
 
 	private void setup() {
+		System.out.print("\033[H\033[2J");
+		System.out.flush();
+
 		playerHand.add(Deck.getRandomCard(true));
 		dealerHand.add(Deck.getRandomCard(true));
 		playerHand.add(Deck.getRandomCard(true));
 		dealerHand.add(Deck.getRandomCard(false));
 
-		System.out.println("Dealer: " + calcHand(dealerHand));
-		System.out.println("Player: " + calcHand(playerHand));
-
-		System.out.println("Nicely formatted:");
+		System.out.println("Dealer");
 		printHand(dealerHand);
+
+		System.out.println("You (" + calcHand(playerHand) + ")");
 		printHand(playerHand);
 	}
 
