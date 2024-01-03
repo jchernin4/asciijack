@@ -20,6 +20,14 @@ public class Card {
 		return suit;
 	}
 
+	public void setRevealed(boolean revealed) {
+		this.revealed = revealed;
+	}
+
+	public boolean getRevealed() {
+		return revealed;
+	}
+
 	public String toString() {
 		return revealed ? getCardString() : getBlankCardString();
 	}
