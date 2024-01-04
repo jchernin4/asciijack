@@ -61,7 +61,7 @@ public class Card {
 	}
 
 	public String[] toStringLines() {
-		return toString().split("\n");
+		return toString().split(System.lineSeparator());
 	}
 
 	public char cardToChar(int c) {
