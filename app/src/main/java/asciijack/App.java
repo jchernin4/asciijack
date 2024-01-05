@@ -91,8 +91,23 @@ public class App {
 
 			if (!statusLine.equals(""))
 				System.out.println(statusLine);
-			System.out.printf("%n%nEnter your choice ([s]tand, [h]it, s[p]lit, [q]uit): ");
-			String resp = sc.nextLine();
+
+			String resp;
+			if (currentHand.getCards().get(0) != currentHand.getCards().get(1) && calcHand(currentHand, false) == 21) {
+				resp = "s";
+
+			}
+
+			if (currentHand.getCards().get(0) == currentHand.getCards().get(1) || calcHand(currentHand, false) < 21) {
+				System.out.printf("%n%nEnter your choice ([s]tand, [h]it, s[p]lit, [q]uit): ");
+				resp = sc.nextLine();
+			} else {
+				if (currentHand.getCards().size() == 2 && calcHand(currentHand, false) == 21) {
+					System.out.println("Blackjack!");
+				}
+
+				resp = "s";
+			}
 
 			switch (resp.toLowerCase()) {
 				case "s":
