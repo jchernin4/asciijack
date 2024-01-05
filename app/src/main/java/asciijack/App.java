@@ -89,7 +89,8 @@ public class App {
 			clearConsole();
 			printAllHands(currentHand, false);
 
-			if (!statusLine.equals("")) System.out.println(statusLine);
+			if (!statusLine.equals(""))
+				System.out.println(statusLine);
 			System.out.printf("%n%nEnter your choice ([s]tand, [h]it, s[p]lit, [q]uit): ");
 			String resp = sc.nextLine();
 
@@ -114,7 +115,7 @@ public class App {
 						clearConsole();
 						printAllHands(currentHand, false);
 						System.out.println("Hitting...");
-						System.out.printf("%n%nBusted! Dealer wins.");
+						System.out.printf("%nBusted! Dealer wins.");
 						playerHands.remove(0);
 						done = true;
 
@@ -127,14 +128,17 @@ public class App {
 
 				case "p":
 					statusLine = "Splitting...";
-					if (currentHand.getCards().size() > 2 || currentHand.getCards().get(0).getCard() != currentHand.getCards().get(1).getCard()) {
+					if (currentHand.getCards().size() > 2
+							|| currentHand.getCards().get(0).getCard() != currentHand.getCards().get(1).getCard()) {
 						statusLine = "Can't split!";
 						continue;
 					}
 
 					playerHands.remove(currentHand);
-					playerHands.add(new Hand(new ArrayList<>(Arrays.asList(currentHand.getCards().get(0), Deck.getRandomCard(true)))));
-					playerHands.add(new Hand(new ArrayList<>(Arrays.asList(currentHand.getCards().get(1), Deck.getRandomCard(true)))));
+					playerHands.add(new Hand(
+							new ArrayList<>(Arrays.asList(currentHand.getCards().get(0), Deck.getRandomCard(true)))));
+					playerHands.add(new Hand(
+							new ArrayList<>(Arrays.asList(currentHand.getCards().get(1), Deck.getRandomCard(true)))));
 					done = true;
 
 					try {
@@ -237,7 +241,16 @@ public class App {
 	}
 
 	private static void clearConsole() {
-		System.out.print("\033[H\033[2J");
-		System.out.flush();
+		String os = System.getProperty("os.name");
+		if (os.contains("Windows")) {
+			try {
+			new ProcessBuilder("cmd", "/c", "cls").inheritIO().start().waitFor();
+			} catch (Exception e) {
+			}
+
+		} else {
+			System.out.print("\033[H\033[2J");
+			System.out.flush();
+		}
 	}
 }
